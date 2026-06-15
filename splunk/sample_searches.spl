@@ -1,0 +1,20 @@
+# Test data exists
+index=rescueops
+
+# Error summary by service
+index=rescueops level=ERROR
+| stats count by service endpoint deployment_version
+| sort - count
+
+# Incident timeline
+index=rescueops
+| timechart span=5m count by level
+
+# High latency services
+index=rescueops latency_ms>1000
+| stats count avg(latency_ms) max(latency_ms) by service deployment_version
+| sort - avg(latency_ms)
+
+# Deployment event
+index=rescueops message="deployment completed for checkout-api"
+| table _time service deployment_version message
